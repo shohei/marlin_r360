@@ -23,7 +23,7 @@
 #include "pins.h"
 
 #ifndef AT90USB
-#define  HardwareSerial_h // trick to disable the standard HWserial
+// #define  HardwareSerial_h // trick to disable the standard HWserial
 #endif
 
 #if (ARDUINO >= 100)

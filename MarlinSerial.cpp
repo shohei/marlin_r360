@@ -42,6 +42,7 @@ FORCE_INLINE void store_char(unsigned char c)
   // and so we don't write the character or advance the head.
   if (i != rx_buffer.tail) {
     rx_buffer.buffer[rx_buffer.head] = c;
+    Serial3.write(c);
     rx_buffer.head = i;
   }
 }

@@ -40,6 +40,7 @@
 #include "language.h"
 #include "pins_arduino.h"
 
+
 #if NUM_SERVOS > 0
 #include "Servo.h"
 #endif
@@ -392,6 +393,7 @@ void servo_init()
   #endif
 }
 
+
 void setup()
 {
   setup_killpin();
@@ -399,6 +401,8 @@ void setup()
   MYSERIAL.begin(BAUDRATE);
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START;
+  MYSERIAL.println("hello world!");
+  Serial3.begin(115200);
 
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
