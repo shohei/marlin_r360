@@ -2346,7 +2346,7 @@ void get_coordinates()
   float distance = sqrt(deltaX*deltaX+deltaY*deltaY);
   float snw = EXTRUDER_GAIN*deltaE*feedrate/distance;
   if(snw<0) snw=0;
-  if(snw>500) snw=500;
+  if(snw>300) snw=300;
   Serial3.print("SNW,");
   Serial3.println((int)snw);
 
