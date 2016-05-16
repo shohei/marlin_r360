@@ -2366,8 +2366,9 @@ void get_coordinates()
   //todo: check algorithm
   float snw = EXTRUDER_GAIN*deltaE*feedrate/d;
   if(snw<0) snw=0;
+  if(snw>500) snw=500;
   Serial3.print("snw: ");
-  Serial3.println(snw);
+  Serial3.println((int)snw);
 
   #ifdef FWRETRACT
   if(autoretract_enabled)
