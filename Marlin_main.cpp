@@ -2340,6 +2340,14 @@ void get_coordinates()
     next_feedrate = code_value();
     if(next_feedrate > 0.0) feedrate = next_feedrate;
   }
+  double deltaX = (destination[0]-current_position[0]);
+  double deltaY = (destination[1]-current_position[1]);
+  double deltaE = (destination[3]-current_position[3]);
+  //todo: check algorithm
+  double snw = feedrate/sqrt(deltaX*deltaX+deltaY*deltaY);
+  Serial3.print("snw: ");
+  Serial3.println(snw);
+
   #ifdef FWRETRACT
   if(autoretract_enabled)
   if( !(seen[X_AXIS] || seen[Y_AXIS] || seen[Z_AXIS]) && seen[E_AXIS])
