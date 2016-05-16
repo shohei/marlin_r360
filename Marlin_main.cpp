@@ -2367,7 +2367,7 @@ void get_coordinates()
   float snw = EXTRUDER_GAIN*deltaE*feedrate/d;
   if(snw<0) snw=0;
   if(snw>500) snw=500;
-  Serial3.print("snw: ");
+  Serial3.print("SNW,");
   Serial3.println((int)snw);
 
   #ifdef FWRETRACT
