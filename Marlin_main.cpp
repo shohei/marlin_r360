@@ -2340,11 +2340,32 @@ void get_coordinates()
     next_feedrate = code_value();
     if(next_feedrate > 0.0) feedrate = next_feedrate;
   }
-  double deltaX = (destination[0]-current_position[0]);
-  double deltaY = (destination[1]-current_position[1]);
-  double deltaE = (destination[3]-current_position[3]);
+  float deltaX = (destination[0]-current_position[0]);
+  float deltaY = (destination[1]-current_position[1]);
+  float deltaE = (destination[3]-current_position[3]);
+  // Serial3.print("deltaX: ");
+  // Serial3.println(deltaX);
+  // Serial3.print("deltaY: ");
+  // Serial3.println(deltaY);
+  // Serial3.print("deltaE: ");
+  // Serial3.println(deltaE);
+  // Serial3.print("feedrate: ");
+  // Serial3.println(feedrate);
+  float a = deltaX*deltaX;
+  // Serial3.print("a: ");
+  // Serial3.print(a);
+  float b = deltaY*deltaY;
+  // Serial3.print(", b: ");
+  // Serial3.print(b);
+  float c = a+b;
+  // Serial3.print(", c: ");
+  // Serial3.print(c);
+  float d = sqrt(c);
+  // Serial3.print(", d: ");
+  // Serial3.print(d);
   //todo: check algorithm
-  double snw = feedrate/sqrt(deltaX*deltaX+deltaY*deltaY);
+  float snw = EXTRUDER_GAIN*deltaE*feedrate/d;
+  if(snw<0) snw=0;
   Serial3.print("snw: ");
   Serial3.println(snw);
 
