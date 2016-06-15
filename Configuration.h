@@ -12,7 +12,9 @@
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 
 //0<SNW<300
-#define EXTRUDER_GAIN 1000000
+#define BASE_GAIN 1000000
+#define MAJOR_GAIN 5
+#define EXTRUDER_GAIN MAJOR_GAIN*BASE_GAIN
 
 // SERIAL_PORT selects which serial port should be used for communication with the host.
 // This allows the connection of wireless adapters (for instance) to non-default port pins.

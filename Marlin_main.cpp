@@ -2477,19 +2477,16 @@ void process_commands()
     float snw = EXTRUDER_GAIN*sqrt(sq(x_diff)+r_ave_square*sq(alpha))
                  *sqrt(sq(destination[X_AXIS]-current_cartesian_position[X_AXIS])
                        +sq(destination[Y_AXIS]-current_cartesian_position[Y_AXIS]))/feedrate;
+    float deltaE = (destination[3]-current_position[3]);
     // Serial3.println(snw,10); 
     if(snw<0) snw = 0;
     if(snw>300) snw = 300;
-    if (fabs(snw - r_360_snw) > 1){
+    if (deltaE !=0 && fabs(snw - r_360_snw) > 1){
       r_360_snw = snw;
-      //hack: 1 and 2 cannot be parsed
-      // int num = (int) r_360_snw;
       int num = (int)(r_360_snw + 0.5); 
       switch(num){
         case 0:
-          // Serial3.print("case 0: r_360_snw = ");
-          // Serial3.println(r_360_snw,10);
-          if(r_360_snw>0.009){
+          if(r_360_snw>(0.009*MAJOR_GAIN)){
             num = 3; 
           }
           break;
