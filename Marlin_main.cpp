@@ -2490,7 +2490,11 @@ void process_commands()
       Serial3.print("SNW,");
       // Serial3.println(r_360_snw,0);
       Serial3.println(num);
-    } 
+    } else if(deltaE==0){
+      //stop bulb  
+      Serial3.print("SNW,");
+      Serial3.println(0);
+    }
 
 
 #ifdef R_360_SHORTER_WAY_DETECTION_METHOD_1
