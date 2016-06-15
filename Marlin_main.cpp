@@ -212,7 +212,7 @@ float delta[3] = {0.0, 0.0, 0.0};
 
 #ifdef R_360
 float r_360[2] = {0.0, 0.0};
-float r_360_snw = 0.0;
+// float r_360_snw = 0.0;
 float r_360_alpha = {0};
 #endif
 
@@ -2341,29 +2341,6 @@ void process_commands()
       if(next_feedrate > 0.0) feedrate = next_feedrate;
     }
 
-    float deltaX = (destination[0]-current_position[0]);
-    float deltaY = (destination[1]-current_position[1]);
-    float deltaE = (destination[3]-current_position[3]);
-    float distance = sqrt(deltaX*deltaX+deltaY*deltaY);
-    float r = sqrt(current_position[0]*current_position[0]+
-                  current_position[1]*current_position[1]);
-    float snw = EXTRUDER_GAIN*deltaE*feedrate*r/distance;
-    if(snw<0){
-      snw=0;
-    } else if(snw<UNDER_LIMIT && snw>0.01){
-      snw=UNDER_LIMIT;
-    } else if(snw>300){
-      snw=300;
-    } 
-    if(deltaE!=0 && fabs(r_360_snw-snw)>1){
-      r_360_snw=snw;
-      Serial3.print("SNW,");
-      Serial3.println(r_360_snw,0);
-    } else if(deltaE==0){
-      Serial3.print("SNW,");
-      Serial3.println(0);
-    }
-
 #ifdef FWRETRACT
     if(autoretract_enabled)
       if( !(seen[X_AXIS] || seen[Y_AXIS] || seen[Z_AXIS]) && seen[E_AXIS])
@@ -2485,33 +2462,6 @@ void process_commands()
     alpha = (atan2( destination[Y_AXIS], destination[X_AXIS] ) - atan2(current_cartesian_position[Y_AXIS], current_cartesian_position[X_AXIS])) *-1;  
 
     new_target_y =  (R_360_OUTER_RADIUS * alpha) + r_360[Y_AXIS] ;  
-
-    // float r_k = sqrt(sq(destination[X_AXIS])+ sq(destination[Y_AXIS]));
-    // float r_k_1 = sqrt(sq(current_cartesian_position[X_AXIS]) + sq(current_cartesian_position[Y_AXIS]));
-    // float r_ave_square = sq(0.5*(r_k+r_k_1));
-    // float snw = EXTRUDER_GAIN*sqrt(sq(x_diff)+r_ave_square*sq(alpha))
-    //                          *sqrt(sq(destination[X_AXIS]-current_cartesian_position[X_AXIS])
-    //                                +sq(destination[Y_AXIS]-current_cartesian_position[Y_AXIS]))
-    //                          /feedrate;
-    // float deltaE = (destination[3]-current_position[3]);
-    // // Serial3.println(snw,10); 
-    // if(snw<0) snw = 0;
-    // if(snw>300) snw = 300;
-    // if (deltaE !=0 && fabs(snw - r_360_snw) > 1){
-    //   r_360_snw = snw;
-    //   int num = (int)(r_360_snw + 0.5); 
-    //   if(num < UNDER_LIMIT && r_360_snw>(0.009*MAJOR_GAIN)){
-    //         num = UNDER_LIMIT; 
-    //   }
-    //   Serial3.print("SNW,");
-    //   // Serial3.println(r_360_snw,0);
-    //   Serial3.println(num);
-    // } else if(deltaE==0){
-    //   //stop bulb  
-    //   Serial3.print("SNW,");
-    //   Serial3.println(0);
-    // }
-
 
 #ifdef R_360_SHORTER_WAY_DETECTION_METHOD_1
     //Go the shorter way
