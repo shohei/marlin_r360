@@ -2473,7 +2473,7 @@ void process_commands()
 
     new_target_y =  (R_360_OUTER_RADIUS * alpha) + r_360[Y_AXIS] ;  
 
-    float r_ave_square = 0.25*(sqrt(sq(destination[X_AXIS]) + sq(destination[Y_AXIS])) + sqrt(sq(current_cartesian_position[X_AXIS]) + sq(current_cartesian_position[Y_AXIS])));
+    float r_ave_square = 0.25*(sq(destination[X_AXIS]) + sq(destination[Y_AXIS]) + sq(current_cartesian_position[X_AXIS]) + sq(current_cartesian_position[Y_AXIS]));
     float snw = EXTRUDER_GAIN*sqrt(sq(x_diff)+r_ave_square*sq(alpha))
                  *sqrt(sq(destination[X_AXIS]-current_cartesian_position[X_AXIS])
                        +sq(destination[Y_AXIS]-current_cartesian_position[Y_AXIS]))/feedrate;
