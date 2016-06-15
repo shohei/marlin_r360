@@ -2484,16 +2484,8 @@ void process_commands()
     if (deltaE !=0 && fabs(snw - r_360_snw) > 1){
       r_360_snw = snw;
       int num = (int)(r_360_snw + 0.5); 
-      switch(num){
-        case 0:
-          if(r_360_snw>(0.009*MAJOR_GAIN)){
-            num = 3; 
-          }
-          break;
-        case 1:
-        case 2:
-          num = 3; 
-          break;
+      if(num < UNDER_LIMIT && r_360_snw>(0.009*MAJOR_GAIN)){
+            num = UNDER_LIMIT; 
       }
       Serial3.print("SNW,");
       // Serial3.println(r_360_snw,0);
