@@ -2480,10 +2480,19 @@ void process_commands()
     // Serial3.println(snw,10); 
     if(snw<0) snw = 0;
     if(snw>300) snw = 300;
-    if (fabs(snw - r_360_snw) > 0.1){
+    if (fabs(snw - r_360_snw) > 1){
       r_360_snw = snw;
+      //hack: 1 and 2 cannot be parsed
+      int num = (int) r_360_snw;
+      switch(num){
+        case 1:
+        case 2:
+          num = 3; 
+          break;
+      }
       Serial3.print("SNW,");
-      Serial3.println(r_360_snw,1);
+      // Serial3.println(r_360_snw,0);
+      Serial3.println(num);
     } 
 
 
