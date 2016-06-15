@@ -2483,7 +2483,8 @@ void process_commands()
     if (fabs(snw - r_360_snw) > 1){
       r_360_snw = snw;
       //hack: 1 and 2 cannot be parsed
-      int num = (int) r_360_snw;
+      // int num = (int) r_360_snw;
+      int num = (int)(r_360_snw + 0.5); 
       switch(num){
         case 1:
         case 2:
