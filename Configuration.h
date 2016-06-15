@@ -12,8 +12,8 @@
 #define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
 
 //0<SNW<300
-#define BASE_GAIN 1000000
-#define MAJOR_GAIN 1
+#define BASE_GAIN 0.0001
+#define MAJOR_GAIN 4
 #define EXTRUDER_GAIN MAJOR_GAIN*BASE_GAIN
 #define UNDER_LIMIT 5
 
