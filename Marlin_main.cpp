@@ -2487,8 +2487,8 @@ void process_commands()
       int num = (int)(r_360_snw + 0.5); 
       switch(num){
         case 0:
-          Serial3.print("case 0: r_360_snw = ");
-          Serial3.println(r_360_snw);
+          // Serial3.print("case 0: r_360_snw = ");
+          // Serial3.println(r_360_snw,10);
           if(r_360_snw>0.009){
             num = 3; 
           }
