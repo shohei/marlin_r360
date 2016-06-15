@@ -2473,10 +2473,13 @@ void process_commands()
 
     new_target_y =  (R_360_OUTER_RADIUS * alpha) + r_360[Y_AXIS] ;  
 
-    float r_ave_square = 0.25*(sq(destination[X_AXIS]) + sq(destination[Y_AXIS]) + sq(current_cartesian_position[X_AXIS]) + sq(current_cartesian_position[Y_AXIS]));
+    float r_k = sqrt(sq(destination[X_AXIS])+ sq(destination[Y_AXIS]));
+    float r_k_1 = sqrt(sq(current_cartesian_position[X_AXIS]) + sq(current_cartesian_position[Y_AXIS]));
+    float r_ave_square = sq(0.5*(r_k+r_k_1));
     float snw = EXTRUDER_GAIN*sqrt(sq(x_diff)+r_ave_square*sq(alpha))
-                 *sqrt(sq(destination[X_AXIS]-current_cartesian_position[X_AXIS])
-                       +sq(destination[Y_AXIS]-current_cartesian_position[Y_AXIS]))/feedrate;
+                             *sqrt(sq(destination[X_AXIS]-current_cartesian_position[X_AXIS])
+                                   +sq(destination[Y_AXIS]-current_cartesian_position[Y_AXIS]))
+                             /feedrate;
     float deltaE = (destination[3]-current_position[3]);
     // Serial3.println(snw,10); 
     if(snw<0) snw = 0;
