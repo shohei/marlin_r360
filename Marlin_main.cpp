@@ -820,6 +820,13 @@ static void homeaxis(int axis) {
 }
 #define HOMEAXIS(LETTER) homeaxis(LETTER##_AXIS)
 
+void freeze(int milliseconds)
+{
+  cli();
+  delay(milliseconds);
+  sei();
+}
+
 void process_commands()
 {
   unsigned long codenum; //throw away variable
@@ -2359,9 +2366,18 @@ void process_commands()
       r_360_snw=snw;
       Serial3.print("SNW,");
       Serial3.println(r_360_snw,0);
+      if(r_360_snw==0&&snw!=0){
+        //open pin
+        freeze(30);
+      }
     } else if(deltaE==0){
+      freeze(30);
       Serial3.print("SNW,");
       Serial3.println(0);
+      if(r_360_snw!=0&&snw==0){
+        //close pin
+        freeze(30);
+      }
     }
 
 #ifdef FWRETRACT
@@ -2401,6 +2417,7 @@ void process_commands()
       }
 #endif //FWRETRACT
   }
+
 
   void get_arc_coordinates()
   {
