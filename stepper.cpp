@@ -276,9 +276,8 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   Position *pos = Position::getInstance();
   float reducer = pos->reducer;
   if(reducer>0){
-    timer = timer / reducer;
+    timer = timer * reducer;
   }
-  Serial3.println(timer);
   if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
   return timer;
 }

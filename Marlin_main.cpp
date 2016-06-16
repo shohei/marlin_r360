@@ -213,7 +213,7 @@ float delta[3] = {0.0, 0.0, 0.0};
 
 #ifdef R_360
 float r_360[2] = {0.0, 0.0};
-// float r_360_snw = 0.0;
+float r_360_snw = 0.0;
 float r_360_alpha = {0};
 #endif
 
@@ -2345,6 +2345,29 @@ void process_commands()
       if(next_feedrate > 0.0) feedrate = next_feedrate;
     }
 
+    float deltaX = (destination[0]-current_position[0]);
+    float deltaY = (destination[1]-current_position[1]);
+    float deltaE = (destination[3]-current_position[3]);
+    float distance = sqrt(deltaX*deltaX+deltaY*deltaY);
+    // float r = sqrt(current_position[0]*current_position[0]+
+    //               current_position[1]*current_position[1]);
+    float snw = EXTRUDER_GAIN*deltaE*feedrate/distance;
+    if(snw<0){
+      snw=0;
+    } else if(snw<UNDER_LIMIT && snw>0.01){
+      snw=UNDER_LIMIT;
+    } else if(snw>300){
+      snw=300;
+    } 
+    if(deltaE!=0 && fabs(r_360_snw-snw)>1){
+      r_360_snw=snw;
+      Serial3.print("SNW,");
+      Serial3.println(r_360_snw,0);
+    } else if(deltaE==0){
+      Serial3.print("SNW,");
+      Serial3.println(0);
+    }
+
 #ifdef FWRETRACT
     if(autoretract_enabled)
       if( !(seen[X_AXIS] || seen[Y_AXIS] || seen[Z_AXIS]) && seen[E_AXIS])
@@ -2534,7 +2557,7 @@ void process_commands()
         float currentR_cartesian = sqrt(sq(current_position[X_AXIS]) + sq(current_position[Y_AXIS]));
         float reducer = currentR_cartesian / MAXR;
         Position *pos = Position::getInstance();
-        if(reducer<0.00001) reducer = 0.0;
+        if(reducer<0.00001) reducer = 0.00001; //under limit
         pos->reducer = reducer;
 
         calculate_r_360(current_cartesian_position,destination);
