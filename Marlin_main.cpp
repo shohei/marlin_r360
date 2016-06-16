@@ -1,4 +1,4 @@
-/* -*- c++ -*- */
+// -*- c++ -*- */
 
 /*
    Reprap firmware based on Sprinter and grbl.
@@ -40,6 +40,7 @@ http://reprap.org/pipermail/reprap-dev/2011-May/003323.html
 #include "language.h"
 #include "pins_arduino.h"
 #include "float.h"
+#include "Position.h"
 
 #if NUM_SERVOS > 0
 #include "Servo.h"
@@ -404,6 +405,9 @@ void setup()
   MYSERIAL.println("hello world!");
   Serial3.begin(115200);
 
+  Position *pos = Position::getInstance();
+  pos->reducer = 0.0;
+
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
   if(mcu & 1) SERIAL_ECHOLNPGM(MSG_POWERUP);
@@ -606,7 +610,7 @@ void get_command()
     else
     {
       if(serial_char == ';') comment_mode = true;
-      if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;
+      if(!comment_mode) cmdbuffer[bufindw][serial_count++] = serial_char;//writing serial_char to cmdbuffer!
     }
   }
 #ifdef SDSUPPORT
@@ -2512,6 +2516,7 @@ void process_commands()
       if (cartesian_mm < 0.000001) { cartesian_mm = abs(difference[E_AXIS]);}
       if (cartesian_mm < 0.000001) { return; }
       float seconds = 6000 * cartesian_mm / feedrate / feedmultiply;
+
       int steps = max(1, int(R_360_DELTA_SEGMENTS_PER_SECOND * seconds));
 
       float current_cartesian_position[4] =  {0.0, 0.0 , 0.0, 0.0};
@@ -2525,6 +2530,12 @@ void process_commands()
         for(int8_t i=0; i < NUM_AXIS; i++) {
           destination[i] = current_position[i] + difference[i] * fraction;
         }
+
+        float currentR_cartesian = sqrt(sq(current_position[X_AXIS]) + sq(current_position[Y_AXIS]));
+        float reducer = currentR_cartesian / MAXR;
+        Position *pos = Position::getInstance();
+        if(reducer<0.00001) reducer = 0.0;
+        pos->reducer = reducer;
 
         calculate_r_360(current_cartesian_position,destination);
 
