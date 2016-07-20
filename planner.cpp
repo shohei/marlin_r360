@@ -755,9 +755,33 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
 #endif
   //  END OF SLOW DOWN SECTION    
 
-
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
   block->nominal_rate = ceil(block->step_event_count * inverse_second); // (step/sec) Always > 0
+
+  float vel = sqrt(sq(delta_mm[X_AXIS]*inverse_second)+ x * sq(delta_mm[Y_AXIS]*inverse_second));
+  Serial3.print("linear velocity: ");
+  Serial3.print(vel,5);
+  // Serial3.print("nominal_speed: ");
+  // Serial3.print(block->nominal_speed,5);
+  // Serial3.print(", ");
+  // Serial3.print("dt:");
+  // Serial3.print(1.0/inverse_second,5);
+  // Serial3.print(", dr:");
+  // Serial3.print(delta_mm[X_AXIS],5);
+  // Serial3.print(", dth:");
+  // Serial3.print(delta_mm[Y_AXIS],5);
+  // if(block->step_event_count==block->steps_x){
+  //     Serial3.print(", r ");
+  // }else if(block->step_event_count==block->steps_y){
+  //     Serial3.print(", th ");
+  // }else if(block->step_event_count==block->steps_z){
+  //     Serial3.print(", z ");
+  // }else if(block->step_event_count==block->steps_e){
+  //     Serial3.print(", E ");
+  // }
+  // Serial3.print("nominal_rate: ");
+  // Serial3.println(block->nominal_rate);
+  // Serial3.print(", ");
 
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
@@ -770,6 +794,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   }
 
   // Max segement time in us.
+  /*
 #ifdef XY_FREQUENCY_LIMIT
 #define MAX_FREQ_TIME (1000000.0/XY_FREQUENCY_LIMIT)
   // Check and limit the xy direction change frequency
@@ -803,6 +828,7 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   if(min_xy_segment_time < MAX_FREQ_TIME)
     speed_factor = min(speed_factor, speed_factor * (float)min_xy_segment_time / (float)MAX_FREQ_TIME);
 #endif
+*/
 
   // Correct the speed  
   if( speed_factor < 1.0)

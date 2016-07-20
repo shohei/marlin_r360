@@ -246,11 +246,11 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   if(step_rate > MAX_STEP_FREQUENCY) step_rate = MAX_STEP_FREQUENCY;
 
   if(step_rate > 20000) { // If steprate > 20kHz >> step 4 times
-    step_rate = (step_rate >> 2)&0x3fff;
+    step_rate = (step_rate >> 2)&0x3fff; //0b_0011_1111_1111_1111
     step_loops = 4;
   }
   else if(step_rate > 10000) { // If steprate > 10kHz >> step 2 times
-    step_rate = (step_rate >> 1)&0x7fff;
+    step_rate = (step_rate >> 1)&0x7fff;//0b_0111_1111_1111_1111
     step_loops = 2;
   }
   else {
@@ -261,16 +261,17 @@ FORCE_INLINE unsigned short calc_timer(unsigned short step_rate) {
   step_rate -= (F_CPU/500000); // Correct for minimal speed
   if(step_rate >= (8*256)){ // higher step rate
     unsigned short table_address = (unsigned short)&speed_lookuptable_fast[(unsigned char)(step_rate>>8)][0];
-    unsigned char tmp_step_rate = (step_rate & 0x00ff);
+    unsigned char tmp_step_rate = (step_rate & 0x00ff);//0b_0000_0000_1111_1111
     unsigned short gain = (unsigned short)pgm_read_word_near(table_address+2);
     MultiU16X8toH16(timer, tmp_step_rate, gain);
     timer = (unsigned short)pgm_read_word_near(table_address) - timer;
   }
   else { // lower step rates
     unsigned short table_address = (unsigned short)&speed_lookuptable_slow[0][0];
-    table_address += ((step_rate)>>1) & 0xfffc;
+    table_address += ((step_rate)>>1) & 0xfffc;//0b_1111_1111_1111_1100
     timer = (unsigned short)pgm_read_word_near(table_address);
     timer -= (((unsigned short)pgm_read_word_near(table_address+2) * (unsigned char)(step_rate & 0x0007))>>3);
+    //0b_0000_0000_0000_0111
   }
   if(timer < 100) { timer = 100; MYSERIAL.print(MSG_STEPPER_TOO_HIGH); MYSERIAL.println(step_rate); }//(20kHz this should never happen)
   return timer;
@@ -317,7 +318,7 @@ ISR(TIMER1_COMPA_vect)
     current_block = plan_get_current_block();
     if (current_block != NULL) {
       current_block->busy = true;
-      trapezoid_generator_reset();
+      trapezoid_generator_reset();//this sets OCR1A_nominal: cruise speed
       counter_x = -(current_block->step_event_count >> 1);
       counter_y = counter_x;
       counter_z = counter_x;
@@ -526,7 +527,7 @@ ISR(TIMER1_COMPA_vect)
     #endif //!ADVANCE
 
 
-
+    //step control unit
     for(int8_t i=0; i < step_loops; i++) { // Take multiple steps per interrupt (For high speed moves)
       #ifndef AT90USB
       MSerial.checkRx(); // Check for serial chars.
@@ -619,6 +620,7 @@ ISR(TIMER1_COMPA_vect)
     // Calculare new timer value
     unsigned short timer;
     unsigned short step_rate;
+    //while acceleration
     if (step_events_completed <= (unsigned long int)current_block->accelerate_until) {
 
       MultiU24X24toH16(acc_step_rate, acceleration_time, current_block->acceleration_rate);
@@ -643,6 +645,7 @@ ISR(TIMER1_COMPA_vect)
 
       #endif
     }
+    //while deceleration
     else if (step_events_completed > (unsigned long int)current_block->decelerate_after) {
       MultiU24X24toH16(step_rate, deceleration_time, current_block->acceleration_rate);
 
@@ -671,6 +674,7 @@ ISR(TIMER1_COMPA_vect)
         old_advance = advance >>8;
       #endif //ADVANCE
     }
+    //plateau speed
     else {
       OCR1A = OCR1A_nominal;
       // ensure we're running at the correct step rate, even if we just came off an acceleration
