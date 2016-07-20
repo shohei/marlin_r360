@@ -90,7 +90,9 @@
 // Make delta curves from many straight lines (linear interpolation).
 // This is a trade-off between visible corners (not enough segments)
 // and processor overload (too many expensive atan2 calls).
-#define R_360_DELTA_SEGMENTS_PER_SECOND 150 //normal 250
+// #define R_360_DELTA_SEGMENTS_PER_SECOND 150 //normal 250
+// #define R_360_DELTA_SEGMENTS_PER_SECOND 3000 //normal 250
+#define R_360_DELTA_SEGMENTS_PER_SECOND 1//normal 250
 
 //steps for full rotation -5760 to 5760 //TODO Use the full rotation here not half
 #define R_360_STEPS_PER_ROTATION 9000

@@ -214,11 +214,11 @@ float delta[3] = {0.0, 0.0, 0.0};
 float r_360[2] = {0.0, 0.0};
 float r_360_snw = 0.0;
 float r_360_alpha = {0};
-float r_360_X_AUX[3] = {0.0, 0.0, 0.0};
-float r_360_Y_AUX[3] = {0.0, 0.0, 0.0};
-int OPMODE = 0; 
-float big_thresh = 0.1;
-float small_thresh = 0.05;
+// float r_360_X_AUX[3] = {0.0, 0.0, 0.0};
+// float r_360_Y_AUX[3] = {0.0, 0.0, 0.0};
+// int OPMODE = 0; 
+// float big_thresh = 0.1;
+// float small_thresh = 0.05;
 #endif
 
 //===========================================================================
@@ -2362,33 +2362,32 @@ void process_commands()
     float r = sqrt(current_position[0]*current_position[0]+
                   current_position[1]*current_position[1]);
     float snw = EXTRUDER_GAIN*deltaE*feedrate*r/distance;
-    // if (distance > dist_thresh){
-    //    divideByTwo(); //this function
-    // }
-    // if(snw<0){
-    //   snw=0;
-    // } else if(snw<UNDER_LIMIT && snw>0.01){
-    //   snw=UNDER_LIMIT;
-    // } else if(snw>300){
-    //   snw=300;
-    // } 
-    // if(deltaE!=0 && fabs(r_360_snw-snw)>1){
-    //   r_360_snw=snw;
-    //   Serial3.print("SNW,");
-    //   Serial3.println(r_360_snw,0);
-    //   if(r_360_snw==0&&snw!=0){
-    //     //open pin
-    //     freeze(30);
-    //   }
-    // } else if(deltaE==0){
-    //   freeze(30);
-    //   Serial3.print("SNW,");
-    //   Serial3.println(0);
-    //   if(r_360_snw!=0&&snw==0){
-    //     //close pin
-    //     freeze(30);
-    //   }
-    // }
+    float snw_fixed = 20.0;
+    if(snw<0){
+      snw=0;
+    } else if(snw<UNDER_LIMIT && snw>0.01){
+      snw=UNDER_LIMIT;
+    } else if(snw>300){
+      snw=300;
+    } 
+    if(deltaE!=0 && fabs(r_360_snw-snw)>1){
+      r_360_snw=snw;
+      Serial3.print("SNW,");
+      // Serial3.println(r_360_snw,0);
+      Serial3.println(snw_fixed,0);
+      if(r_360_snw==0&&snw!=0){
+        //open pin
+        freeze(30);
+      }
+    } else if(deltaE==0){
+      freeze(30);
+      Serial3.print("SNW,");
+      Serial3.println(0);
+      if(r_360_snw!=0&&snw==0){
+        //close pin
+        freeze(30);
+      }
+    }
 
 #ifdef FWRETRACT
     if(autoretract_enabled)
@@ -2636,50 +2635,11 @@ void process_commands()
         float fraction = float(s) / float(steps);
         float new_target_y;
         for(int8_t i=0; i < NUM_AXIS; i++) {
-          //question: what is the unit of destination? [mm] or [pulses]?
           destination[i] = current_position[i] + difference[i] * fraction;
         }
 
         calculate_r_360(current_cartesian_position,destination);
-
-
-// #ifdef R_360_QUICK_CROSSING_ON
-//         //speed up large Y rotations on tiny X movements
-//         if (abs(r_360_alpha) > R_360_ALPHA_CONDITION && x_diff < R_360_X_DIFF_CONDITION) {
-//           plan_buffer_line(abs(r_360[X_AXIS]), r_360[Y_AXIS], current_cartesian_position[Z_AXIS], current_cartesian_position[E_AXIS], max_feedrate[Y_AXIS], active_extruder);    
-
-//         }else{
-//           plan_buffer_line(abs(r_360[X_AXIS]),  r_360[Y_AXIS], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-//         }
-// #else
-        //Here we go
-        // switch(OPMODE){
-        //   case 2:
-        //     //divide by three
-        //     plan_buffer_line(abs(r_360_X_AUX[0]),  r_360_Y_AUX[0], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     plan_buffer_line(abs(r_360_X_AUX[1]),  r_360_Y_AUX[1], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     plan_buffer_line(abs(r_360_X_AUX[2]),  r_360_Y_AUX[2], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     break;
-        //   case 1:
-        //     //divide by two
-        //     plan_buffer_line(abs(r_360_X_AUX[0]),  r_360_Y_AUX[0], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     plan_buffer_line(abs(r_360_X_AUX[1]),  r_360_Y_AUX[1], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     break;
-        //   case 0:
-        //     plan_buffer_line(abs(r_360[X_AXIS]),  r_360[Y_AXIS], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-        //     break;
-        // }
-            plan_buffer_line(abs(r_360[X_AXIS]),  r_360[Y_AXIS], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
-
-// #endif
-        //SERIAL_ECHOPGM("Current Y="); SERIAL_ECHO( current_position[Y_AXIS] );
-        //SERIAL_ECHOPGM(" Current X="); SERIAL_ECHO( current_position[X_AXIS] );
-        //SERIAL_ECHOPGM("Current Cartesian Y="); SERIAL_ECHO( current_cartesian_position[Y_AXIS] );
-        //SERIAL_ECHOPGM(" Current Cartesian X="); SERIAL_ECHO( current_cartesian_position[X_AXIS] );
-        //SERIAL_ECHOPGM("angle="); SERIAL_ECHO(alpha);
-        //SERIAL_ECHOPGM("total alpha="); SERIAL_ECHO(r_360_alpha);
-        //SERIAL_ECHOPGM(" Y="); SERIAL_ECHO( r_360[Y_AXIS] );
-        //SERIAL_ECHOPGM(" X="); SERIAL_ECHOLN( r_360[X_AXIS] );
+        plan_buffer_line(abs(r_360[X_AXIS]),  r_360[Y_AXIS], destination[Z_AXIS],destination[E_AXIS], feedrate*feedmultiply/60/100.0,active_extruder);
 
         for(int8_t i=0; i < NUM_AXIS; i++) {
           current_cartesian_position[i] = destination[i];

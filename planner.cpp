@@ -556,28 +556,28 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   	}
 #endif
 
-#ifdef R_360_SHORTER_WAY_DETECTION_METHOD_2
+// #ifdef R_360_SHORTER_WAY_DETECTION_METHOD_2
   
-      //identyfy 0 position
-      target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
-      SERIAL_ECHOPGM(" position="); SERIAL_ECHO( position[Y_AXIS]   );
+//       //identyfy 0 position
+//       target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
+//       SERIAL_ECHOPGM(" position="); SERIAL_ECHO( position[Y_AXIS]   );
     
-      if (R_360_STEPS_PER_ROTATION <= abs(target[Y_AXIS])  
-        || (target[Y_AXIS] > (R_360_STEPS_PER_ROTATION / 2)) && (position[Y_AXIS] < (-R_360_STEPS_PER_ROTATION / 2))
-        || (target[Y_AXIS] < (-R_360_STEPS_PER_ROTATION / 2)) && (position[Y_AXIS] > (R_360_STEPS_PER_ROTATION / 2))
-        ){
+//       if (R_360_STEPS_PER_ROTATION <= abs(target[Y_AXIS])  
+//         || (target[Y_AXIS] > (R_360_STEPS_PER_ROTATION / 2)) && (position[Y_AXIS] < (-R_360_STEPS_PER_ROTATION / 2))
+//         || (target[Y_AXIS] < (-R_360_STEPS_PER_ROTATION / 2)) && (position[Y_AXIS] > (R_360_STEPS_PER_ROTATION / 2))
+//         ){
      
-          original_target_y = target[Y_AXIS];
-          cross_flag = 1;
-  	  if (position[Y_AXIS] > 0 ){
-             target[Y_AXIS] = R_360_STEPS_PER_ROTATION;
-             cross_direction = 1;
-           }else{
-             target[Y_AXIS] = -R_360_STEPS_PER_ROTATION;
-             cross_direction = -1;
-           }
-      } 
-#endif
+//           original_target_y = target[Y_AXIS];
+//           cross_flag = 1;
+//   	  if (position[Y_AXIS] > 0 ){
+//              target[Y_AXIS] = R_360_STEPS_PER_ROTATION;
+//              cross_direction = 1;
+//            }else{
+//              target[Y_AXIS] = -R_360_STEPS_PER_ROTATION;
+//              cross_direction = -1;
+//            }
+//       } 
+// #endif
    
   #else
   	target[Y_AXIS] = lround(y*axis_steps_per_unit[Y_AXIS]);
@@ -616,16 +616,16 @@ void plan_buffer_line(const float &x, const float &y, const float &z, const floa
   block->busy = false;
 
   // Number of steps for each axis
-#ifndef COREXY
+// #ifndef COREXY
 // default non-h-bot planning
 block->steps_x = labs(target[X_AXIS]-position[X_AXIS]);
 block->steps_y = labs(target[Y_AXIS]-position[Y_AXIS]);
-#else
-// corexy planning
-// these equations follow the form of the dA and dB equations on http://www.corexy.com/theory.html
-block->steps_x = labs((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]));
-block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]));
-#endif
+// #else
+// // corexy planning
+// // these equations follow the form of the dA and dB equations on http://www.corexy.com/theory.html
+// block->steps_x = labs((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]));
+// block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]));
+// #endif
   block->steps_z = labs(target[Z_AXIS]-position[Z_AXIS]);
   block->steps_e = labs(target[E_AXIS]-position[E_AXIS]);
   block->steps_e *= extrudemultiply;
@@ -709,13 +709,13 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   } 
 
   float delta_mm[4];
-  #ifndef COREXY
-    delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/axis_steps_per_unit[X_AXIS];
-    delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/axis_steps_per_unit[Y_AXIS];
-  #else
+  // #ifndef COREXY
+  //   delta_mm[X_AXIS] = (target[X_AXIS]-position[X_AXIS])/axis_steps_per_unit[X_AXIS];
+  //   delta_mm[Y_AXIS] = (target[Y_AXIS]-position[Y_AXIS])/axis_steps_per_unit[Y_AXIS];
+  // #else
     delta_mm[X_AXIS] = ((target[X_AXIS]-position[X_AXIS]) + (target[Y_AXIS]-position[Y_AXIS]))/axis_steps_per_unit[X_AXIS];
     delta_mm[Y_AXIS] = ((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-position[Y_AXIS]))/axis_steps_per_unit[Y_AXIS];
-  #endif
+  // #endif
   delta_mm[Z_AXIS] = (target[Z_AXIS]-position[Z_AXIS])/axis_steps_per_unit[Z_AXIS];
   delta_mm[E_AXIS] = ((target[E_AXIS]-position[E_AXIS])/axis_steps_per_unit[E_AXIS])*extrudemultiply/100.0;
   if ( block->steps_x <=dropsegments && block->steps_y <=dropsegments && block->steps_z <=dropsegments )
@@ -728,10 +728,18 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   }
   float inverse_millimeters = 1.0/block->millimeters;  // Inverse millimeters to remove multiple divides 
 
-    // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
-  float inverse_second = feed_rate * inverse_millimeters;
 
+  // Calculate speed in mm/second for each axis. No divide by zero due to previous checks.
+  float inverse_second = feed_rate * inverse_millimeters;
   int moves_queued=(block_buffer_head-block_buffer_tail + BLOCK_BUFFER_SIZE) & (BLOCK_BUFFER_SIZE - 1);
+
+  //identify feedrate modification rate: beta
+  float vel0 = sqrt(sq(delta_mm[X_AXIS]*inverse_second)+ sq(x) * sq(delta_mm[Y_AXIS]*inverse_second));
+  float velk = 100;//fixed linear speed
+  float inverse_beta = velk/vel0;
+
+  feed_rate = feed_rate * inverse_beta; 
+  inverse_second = feed_rate * inverse_millimeters;
 
   // slow down when de buffer starts to empty, rather than wait at the corner for a buffer refill
 #ifdef OLD_SLOWDOWN
@@ -758,30 +766,16 @@ block->steps_y = labs((target[X_AXIS]-position[X_AXIS]) - (target[Y_AXIS]-positi
   block->nominal_speed = block->millimeters * inverse_second; // (mm/sec) Always > 0
   block->nominal_rate = ceil(block->step_event_count * inverse_second); // (step/sec) Always > 0
 
-  float vel = sqrt(sq(delta_mm[X_AXIS]*inverse_second)+ x * sq(delta_mm[Y_AXIS]*inverse_second));
-  Serial3.print("linear velocity: ");
-  Serial3.print(vel,5);
-  // Serial3.print("nominal_speed: ");
-  // Serial3.print(block->nominal_speed,5);
+  //debug dump
+  // Serial3.print("ibeta: ");
+  // Serial3.print(inverse_beta);
   // Serial3.print(", ");
-  // Serial3.print("dt:");
-  // Serial3.print(1.0/inverse_second,5);
-  // Serial3.print(", dr:");
-  // Serial3.print(delta_mm[X_AXIS],5);
-  // Serial3.print(", dth:");
-  // Serial3.print(delta_mm[Y_AXIS],5);
-  // if(block->step_event_count==block->steps_x){
-  //     Serial3.print(", r ");
-  // }else if(block->step_event_count==block->steps_y){
-  //     Serial3.print(", th ");
-  // }else if(block->step_event_count==block->steps_z){
-  //     Serial3.print(", z ");
-  // }else if(block->step_event_count==block->steps_e){
-  //     Serial3.print(", E ");
-  // }
-  // Serial3.print("nominal_rate: ");
-  // Serial3.println(block->nominal_rate);
+  // Serial3.print("r: ");
+  // Serial3.print(x);
   // Serial3.print(", ");
+  // float vel = sqrt(sq(delta_mm[X_AXIS]*inverse_second)+ sq(x) * sq(delta_mm[Y_AXIS]*inverse_second));
+  // Serial3.print("linear velocity: ");
+  // Serial3.println(vel,5);
 
   // Calculate and limit speed in mm/sec for each axis
   float current_speed[4];
